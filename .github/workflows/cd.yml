@@ -1,0 +1,24 @@
+name: Continuous Deployment
+
+on:
+  push:
+    branches: [ develop, release, main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Development
+        if: github.ref == 'refs/heads/develop'
+        run: |
+          curl -X POST "${{ secrets.RENDER_DEV_DEPLOY_HOOK }}"
+
+      - name: Deploy to Staging/QA
+        if: github.ref == 'refs/heads/release'
+        run: |
+          curl -X POST "${{ secrets.RENDER_QA_DEPLOY_HOOK }}"
+
+      - name: Deploy to Production
+        if: github.ref == 'refs/heads/main'
+        run: |
+          curl -X POST "${{ secrets.RENDER_PROD_DEPLOY_HOOK }}"
